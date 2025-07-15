@@ -331,6 +331,47 @@
             border: 1px solid #b3d9ff;
         }
 
+        .deposit-form {
+                display: flex;
+                gap: 10px;
+                margin-top: 10px;
+                flex-wrap: wrap;
+                align-items: center;
+                width: 100%;
+            }
+
+            .input-amount {
+                padding: 10px 14px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-size: 0.95em;
+                width: 140px;
+                background: #f9f9f9;
+                transition: border 0.2s ease;
+            }
+
+            .input-amount:focus {
+                outline: none;
+                border-color: #764ba2;
+                background: #fff;
+            }
+
+            .btn-deposit {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 18px;
+                font-weight: 500;
+                font-size: 0.95em;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .btn-deposit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            }
+
         @media (max-width: 768px) {
             .navbar-container {
                 flex-direction: column;
@@ -435,7 +476,7 @@
                         <div class="info-value" th:text="${account.interestRate ?: '0.00'}">0.00%</div>
                     </div>-->
                 </div>
-                
+
                 <div class="account-actions">
                     <a th:href="@{/accounts/{id}/transactions(id=${account.accountId})}" class="btn btn-primary">
                         📋 View Transactions
@@ -446,7 +487,17 @@
                     <a th:href="@{/accounts/{id}/statement(id=${account.accountId})}" class="btn btn-secondary">
                         📄 Statement
                     </a>
+
+                    <!-- 💵 Deposit Form -->
+                    <form th:action="@{/accounts/{id}/deposit(id=${account.accountId})}" method="post" class="deposit-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <input type="number" name="amount" min="1" step="0.01" placeholder="Enter amount"
+                               class="input-amount" required />
+                        <button type="submit" class="btn btn-deposit">💵 Deposit</button>
+                    </form>
                 </div>
+
             </div>
         </div>
         <div class="actions-section">

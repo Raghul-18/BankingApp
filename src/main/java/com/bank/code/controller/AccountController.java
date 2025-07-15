@@ -100,4 +100,19 @@ public class AccountController {
             return "create-account";
         }
     }
+    @PostMapping("/{id}/deposit")
+    public String depositToAccount(@PathVariable("id") Long accountId,
+                                   @RequestParam("amount") BigDecimal amount,
+                                   RedirectAttributes redirectAttributes,
+                                   @AuthenticationPrincipal User loggedInUser) {
+        try {
+            accountService.depositToAccount(accountId, amount, loggedInUser);
+            redirectAttributes.addFlashAttribute("message", "Deposit successful!");
+        } catch (InvalidTransactionException e) {
+            redirectAttributes.addFlashAttribute("message", "Deposit failed: " + e.getMessage());
+        }
+        return "redirect:/accounts";
+    }
+
+
 }

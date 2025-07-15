@@ -142,4 +142,26 @@ public class AccountService {
     public List<Account> findByUserUserId(Long userId) {
         return accountRepository.findByUserId(userId);
     }
+
+    @Transactional
+    public void depositToAccount(Long accountId, BigDecimal amount, User user) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidTransactionException("Deposit amount must be greater than zero.");
+        }
+
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new InvalidTransactionException("Account not found"));
+
+        if (!account.getUser().getUserId().equals(user.getUserId())) {
+            throw new InvalidTransactionException("Unauthorized deposit attempt");
+        }
+
+        if (!"ACTIVE".equals(account.getStatus())) {
+            throw new InvalidTransactionException("Cannot deposit to inactive account");
+        }
+
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+    }
+
 }
