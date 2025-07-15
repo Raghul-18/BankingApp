@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking System - Create New Account</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .breadcrumb {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            list-style: none;
+        }
+
+        .breadcrumb-item {
+            color: #666;
+        }
+
+        .breadcrumb-item a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: #764ba2;
+        }
+
+        .breadcrumb-item.active {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-control:invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control:valid {
+            border-color: #28a745;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-help {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .account-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .account-type-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .account-type-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .account-type-card.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .account-type-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .account-type-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .account-type-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .account-type-features {
+            list-style: none;
+            font-size: 0.8em;
+            color: #28a745;
+        }
+
+        .account-type-features li {
+            margin-bottom: 3px;
+        }
+
+        .account-type-features li::before {
+            content: '✓ ';
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .user-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .user-info-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info-details {
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .initial-deposit {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .deposit-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .deposit-amount {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .min-deposit {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .terms-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            margin-top: 3px;
+        }
+
+        .terms-text {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .terms-link {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background-color: #e7f3ff;
+            color: #0066cc;
+            border: 1px solid #b3d9ff;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .preview-section.show {
+            display: block;
+        }
+
+        .preview-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .preview-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .preview-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .preview-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navbar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .page-title {
+                font-size: 2em;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .account-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span>🏦</span>
+                Banking System
+            </div>
+            <div class="navbar-nav">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/accounts" class="nav-link active">Accounts</a>
+                <a href="/transfer" class="nav-link">Transfer</a>
+                <a href="/transactions" class="nav-link">Transactions</a>
+                <a href="/profile" class="nav-link">Profile</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin" class="nav-link">Admin</a>
+                <span class="nav-link">Welcome, <span th:text="${username}"></span></span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">
+                <span>➕</span>
+                Create New Account
+            </h1>
+            <p class="page-subtitle">Open a new banking account with us</p>
+        </div>
+
+        <nav class="breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item">→</li>
+                <li class="breadcrumb-item"><a href="/accounts">Accounts</a></li>
+                <li class="breadcrumb-item">→</li>
+                <li class="breadcrumb-item active">Create Account</li>
+            </ol>
+        </nav>
+
+        <div th:if="${message}" class="alert alert-success">
+            <span>✅</span>
+            <span th:text="${message}"></span>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span>❌</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/accounts/create}" th:object="${accountRequest}" method="post" class="form-container">
+            <!-- Account Type Selection -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span>🏷️</span>
+                    Choose Account Type
+                </h3>
+                
+                <div class="account-types">
+                    <label class="account-type-card">
+                        <input type="radio" th:field="*{accountType}" value="SAVINGS" required>
+                        <div class="account-type-title">
+                            <span>💰</span>
+                            Savings Account
+                        </div>
+                        <div class="account-type-description">
+                            Earn interest while you save for the future
+                        </div>
+                        <ul class="account-type-features">
+                            <li>Competitive interest rates</li>
+                            <li>No monthly fees</li>
+                            <li>Online banking</li>
+                            <li>Automatic transfers</li>
+                        </ul>
+                    </label>
+
+                    <label class="account-type-card">
+                        <input type="radio" th:field="*{accountType}" value="BUSINESS" required>
+                        <div class="account-type-title">
+                            <span>🏢</span>
+                            Business Account
+                        </div>
+                        <div class="account-type-description">
+                            Designed for small and medium businesses
+                        </div>
+                        <ul class="account-type-features">
+                            <li>Business banking tools</li>
+                            <li>Merchant services</li>
+                            <li>Business credit cards</li>
+                            <li>Cash management</li>
+                        </ul>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Account Owner Information -->
+			<div class="form-section">
+			    <h3 class="section-title">
+			        <span>👤</span>
+			        Account Owner
+			    </h3>
+			    
+			    <div class="user-info">
+			        <div class="user-info-title">
+			            <span>ℹ️</span>
+			            Account Owner Information
+			        </div>
+			        <div class="user-info-details">
+			            This account will be created for: 
+			            <strong th:text="${currentUser != null and currentUser.firstName != null and currentUser.lastName != null} ? ${currentUser.firstName + ' ' + currentUser.lastName} : 'Unknown User'">John Doe</strong><br>
+			            Email: <span th:text="${currentUser != null and currentUser.email != null} ? ${currentUser.email} : 'No Email Provided'">john.doe@example.com</span>
+			        </div>
+			    </div>
+			</div>
+
+            <!-- Account Details -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span>📋</span>
+                    Account Details
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Account Nickname</label>
+                        <input type="text" th:field="*{accountNickname}" class="form-control" placeholder="e.g., My Checking Account" maxlength="50">
+                        <div class="form-help">Optional: Give your account a custom name</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Branch</label>
+                        <select th:field="*{branchCode}" class="form-select">
+                            <option value="BR000">Online Banking</option>
+                            <option value="BR001">Main Branch - Chennai</option>
+                            <option value="BR002">North Branch - Banglore</option>
+                            <option value="BR003">South Branch - Mumbai</option>
+                            <option value="BR004">West Branch - Pune</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Initial Deposit -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span>💵</span>
+                    Initial Deposit
+                </h3>
+
+                <div class="initial-deposit">
+                    <div class="deposit-info">
+                        <div class="deposit-amount">$<span id="depositAmount">0.00</span></div>
+                        <div class="min-deposit">Minimum: $<span id="minDeposit">25.00</span></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">Deposit Amount</label>
+                        <input type="number" th:field="*{initialDeposit}" class="form-control" min="25" step="0.01" placeholder="25.00" required>
+                        <div class="form-help">Enter the amount you want to deposit to open the account</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Funding Source</label>
+                        <select th:field="*{fundingSource}" class="form-select" required>
+                            <option value="">Select funding source...</option>
+                            <option value="TRANSFER">Transfer from existing account</option>
+                            <option value="CASH">Cash deposit</option>
+                            <option value="CHECK">Check deposit</option>
+                            <option value="WIRE">Wire transfer</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <span>📄</span>
+                    Terms & Conditions
+                </h3>
+
+                <div class="terms-section">
+                    <div class="terms-checkbox">
+                        <input type="checkbox" th:field="*{agreeTerms}" id="agreeTerms" required>
+                        <label for="agreeTerms" class="terms-text">
+                            I agree to the <a href="/terms" class="terms-link" target="_blank">Terms and Conditions</a> 
+                            and <a href="/privacy" class="terms-link" target="_blank">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <div class="terms-checkbox">
+                        <input type="checkbox" th:field="*{readDisclosures}" id="readDisclosures" required>
+                        <label for="agreeDisclosures" class="terms-text">
+                            I acknowledge that I have read and understood the 
+                            <a href="/disclosures" class="terms-link" target="_blank">Account Disclosures</a>
+                        </label>
+                    </div>
+
+                    <div class="terms-checkbox">
+                        <input type="checkbox" th:field="*{electronicConsent}" id="electronicConsent">
+                        <label for="agreeElectronic" class="terms-text">
+                            I consent to receive electronic statements and communications
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Summary Preview -->
+            <div class="preview-section" id="accountPreview">
+                <h3 class="preview-title">Account Summary</h3>
+                <div class="preview-item">
+                    <span class="preview-label">Account Owner:</span>
+                    <span class="preview-value" th:text="${currentUser.firstName + ' ' + currentUser.lastName}">John Doe</span>
+                </div>
+                <div class="preview-item">
+                    <span class="preview-label">Account Type:</span>
+                    <span class="preview-value" id="previewType">-</span>
+                </div>
+                <div class="preview-item">
+                    <span class="preview-label">Initial Deposit:</span>
+                    <span class="preview-value" id="previewDeposit">$0.00</span>
+                </div>
+                <div class="preview-item">
+                    <span class="preview-label">Currency:</span>
+                    <span class="preview-value" id="previewCurrency">USD</span>
+                </div>
+                <div class="preview-item">
+                    <span class="preview-label">Monthly Fee:</span>
+                    <span class="preview-value" id="previewFee">$0.00</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/accounts" class="btn btn-secondary">
+                    <span>←</span> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary" id="createAccountBtn">
+                    <span>✅</span> Create Account
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Account type selection
+        document.querySelectorAll('input[name="accountType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.account-type-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                // Add selected class to current card
+                this.closest('.account-type-card').classList.add('selected');
+                
+                // Update minimum deposit based on account type
+                updateMinimumDeposit(this.value);
+                updatePreview();
+            });
+        });
+
+        // Update minimum deposit requirements
+        function updateMinimumDeposit(accountType) {
+            const minAmounts = {
+                'CHECKING': 25,
+                'SAVINGS': 100,
+                'BUSINESS': 500
+            };
+            
+            const minDeposit = minAmounts[accountType] || 25;
+            document.getElementById('minDeposit').textContent = minDeposit.toFixed(2);
+            
+            const depositInput = document.querySelector('input[name="initialDeposit"]');
+            depositInput.min = minDeposit;
+            depositInput.placeholder = minDeposit.toFixed(2);
+        }
+
+        // Initial deposit amount display
+        document.querySelector('input[name="initialDeposit"]').addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            document.getElementById('depositAmount').textContent = amount.toFixed(2);
+            updatePreview();
+        });
+
+        // Form validation
+        function validateForm() {
+            const requiredFields = document.querySelectorAll('input[required], select[required]');
+            const termsChecked = document.getElementById('agreeTerms').checked;
+            const disclosuresChecked = document.getElementById('agreeDisclosures').checked;
+            
+            let allValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    allValid = false;
+                }
+            });
+            
+            if (!termsChecked || !disclosuresChecked) {
+                allValid = false;
+            }
+            
+            document.getElementById('createAccountBtn').disabled = !allValid;
+            
+            if (allValid) {
+                document.getElementById('accountPreview').classList.add('show');
+            }
+        }
+
+        // Update preview
+        function updatePreview() {
+            const accountType = document.querySelector('input[name="accountType"]:checked')?.value || '-';
+            const initialDeposit = document.querySelector('input[name="initialDeposit"]').value || '0.00';
+            const currency = document.querySelector('select[name="currency"]').value || 'USD';
+            
+            const accountTypeNames = {
+                'CHECKING': 'Checking Account',
+                'SAVINGS': 'Savings Account',
+                'BUSINESS': 'Business Account'
+            };
+            
+            const monthlyFees = {
+                'CHECKING': 0,
+                'SAVINGS': 0,
+                'BUSINESS': 15
+            };
+            
+            document.getElementById('previewType').textContent = accountTypeNames[accountType] || '-';
+            document.getElementById('previewDeposit').textContent = '$' + parseFloat(initialDeposit).toFixed(2);
+            document.getElementById('previewCurrency').textContent = currency;
+            document.getElementById('previewFee').textContent = '$' + (monthlyFees[accountType] || 0).toFixed(2);
+        }
+
+        // Add event listeners for form validation
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', validateForm);
+            element.addEventListener('input', validateForm);
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            validateForm();
+        });
+    </script>
+</body>
+</html>

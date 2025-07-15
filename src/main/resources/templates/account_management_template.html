@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking System - Account Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .search-filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-filter-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .accounts-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .accounts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .accounts-table th,
+        .accounts-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .accounts-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+        }
+
+        .accounts-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-suspended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-closed {
+            background: #f1f3f4;
+            color: #495057;
+        }
+
+        .account-type-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .type-savings {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-checking {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .type-business {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .type-loan {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-view {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #0056b3;
+        }
+
+        .btn-edit {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1e7e34;
+        }
+
+        .btn-suspend {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-suspend:hover {
+            background: #e0a800;
+        }
+
+        .btn-close {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-close:hover {
+            background: #c82333;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination .current {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navbar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .page-title {
+                font-size: 2em;
+            }
+            
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .accounts-table {
+                font-size: 0.9em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span>🏦</span>
+                Banking System
+            </div>
+            <div class="navbar-nav">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/admin" class="nav-link">Admin</a>
+                <a href="/admin/user-management" class="nav-link">Users</a>
+                <a href="/admin/account-management" class="nav-link">Accounts</a>
+                <a href="/admin/transaction-monitoring" class="nav-link">Transactions</a>
+                <span class="nav-link">Welcome, <span th:text="${username}"></span></span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Account Management</h1>
+            <p class="page-subtitle">Manage customer accounts, view balances, and monitor account activity</p>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${totalAccounts ?: 0}">0</div>
+                <div class="stat-label">Total Accounts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${activeAccounts ?: 0}">0</div>
+                <div class="stat-label">Active Accounts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${suspendedAccounts ?: 0}">0</div>
+                <div class="stat-label">Suspended Accounts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${totalBalance ?: '0.00'}">0.00</div>
+                <div class="stat-label">Total Balance</div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-section">
+            <h3 class="search-filter-title">Search & Filter Accounts</h3>
+            <form th:action="@{/admin/account-management}" method="GET" class="search-form">
+                <div class="form-group">
+                    <label class="form-label">Account Number</label>
+                    <input type="text" name="accountNumber" class="form-input" 
+                           th:value="${param.accountNumber}" placeholder="Enter account number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Holder Name</label>
+                    <input type="text" name="holderName" class="form-input" 
+                           th:value="${param.holderName}" placeholder="Enter account holder name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Type</label>
+                    <select name="accountType" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="SAVINGS" th:selected="${param.accountType == 'SAVINGS'}">Savings</option>
+                        <option value="CHECKING" th:selected="${param.accountType == 'CHECKING'}">Checking</option>
+                        <option value="BUSINESS" th:selected="${param.accountType == 'BUSINESS'}">Business</option>
+                        <option value="LOAN" th:selected="${param.accountType == 'LOAN'}">Loan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Status</label>
+                    <select name="accountStatus" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="ACTIVE" th:selected="${param.accountStatus == 'ACTIVE'}">Active</option>
+                        <option value="SUSPENDED" th:selected="${param.accountStatus == 'SUSPENDED'}">Suspended</option>
+                        <option value="PENDING" th:selected="${param.accountStatus == 'PENDING'}">Pending</option>
+                        <option value="CLOSED" th:selected="${param.accountStatus == 'CLOSED'}">Closed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Min Balance</label>
+                    <input type="number" name="minBalance" class="form-input" 
+                           th:value="${param.minBalance}" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Balance</label>
+                    <input type="number" name="maxBalance" class="form-input" 
+                           th:value="${param.maxBalance}" placeholder="0.00" step="0.01">
+                </div>
+            </form>
+            <div class="button-group">
+                <button type="submit" class="btn-search" onclick="document.querySelector('form').submit()">Search</button>
+                <button type="button" class="btn-reset" onclick="window.location.href='/admin/account-management'">Reset</button>
+            </div>
+        </div>
+
+        <!-- Accounts Table Section -->
+        <div class="accounts-section">
+            <div class="section-header">
+                <h3 class="section-title">Customer Accounts</h3>
+                <a href="/admin/account-management/create" class="btn-primary">Create New Account</a>
+            </div>
+
+            <table class="accounts-table">
+                <thead>
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Account Holder</th>
+                        <th>Type</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                        <th>Last Transaction</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="account : ${accounts}">
+                        <td th:text="${account.accountNumber}">12345678</td>
+                        <td>
+                            <div>
+                                <strong th:text="${account.user.firstName + ' ' + account.user.lastName}">John Doe</strong>
+                                <div style="font-size: 0.9em; color: #666;" th:text="${account.user.email}">john@example.com</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="account-type-badge" 
+                                  th:classappend="${account.accountType == 'SAVINGS' ? 'type-savings' : 
+                                                 account.accountType == 'CHECKING' ? 'type-checking' : 
+                                                 account.accountType == 'BUSINESS' ? 'type-business' : 'type-loan'}"
+                                  th:text="${account.accountType}">SAVINGS</span>
+                        </td>
+                        <td th:text="${'$' + account.balance}">$1,234.56</td>
+                        <td>
+                            <span class="status-badge" 
+                                  th:classappend="${account.accountStatus == 'ACTIVE' ? 'status-active' : 
+                                                 account.accountStatus == 'SUSPENDED' ? 'status-suspended' : 
+                                                 account.accountStatus == 'PENDING' ? 'status-pending' : 'status-closed'}"
+                                  th:text="${account.accountStatus}">ACTIVE</span>
+                        </td>
+                        <td th:text="${#temporals.format(account.createdDate, 'yyyy-MM-dd')}">2024-01-15</td>
+                        <td th:text="${account.lastTransactionDate != null ? #temporals.format(account.lastTransactionDate, 'yyyy-MM-dd') : 'No transactions'}">2024-01-20</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a th:href="@{/admin/account-management/view/{id}(id=${account.id})}" 
+                                class="btn-action btn-view">View</a>
+
+                                <a th:href="@{/admin/account-management/edit/{id}(id=${account.id})}" 
+                                class="btn-action btn-edit">Edit</a>
+
+                                <button th:if="${account.accountStatus == 'ACTIVE'}" 
+                                        class="btn-action btn-suspend"
+                                        th:onclick="|suspendAccount(${account.id}, '${account.accountNumber}')|">
+                                    Suspend
+                                </button>
+
+                                <button th:if="${account.accountStatus == 'SUSPENDED'}" 
+                                        class="btn-action btn-edit"
+                                        th:onclick="|activateAccount(${account.id}, '${account.accountNumber}')|">
+                                    Activate
+                                </button>
+
+                                <button th:if="${account.accountStatus != 'CLOSED'}" 
+                                        class="btn-action btn-close"
+                                        th:onclick="|closeAccount(${account.id}, '${account.accountNumber}')|">
+                                    Close
+                                </button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 0}" th:href="@{/admin/account-management(page=${currentPage - 1})}">&laquo; Previous</a>
+                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:if="${i != currentPage}" th:href="@{/admin/account-management(page=${i})}" th:text="${i + 1}">1</a>
+                    <span th:if="${i == currentPage}" class="current" th:text="${i + 1}">1</span>
+                </span>
+                <a th:if="${currentPage < totalPages - 1}" th:href="@{/admin/account-management(page=${currentPage + 1})}">Next &raquo;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Action</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalMessage"></div>
+            <div class="button-group" style="margin-top: 20px;">
+                <button id="confirmBtn" class="btn-primary">Confirm</button>
+                <button class="btn-reset" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function suspendAccount(accountId, accountNumber) {
+            showModal('Are you sure you want to suspend account ' + accountNumber + '?', function() {
+                window.location.href = '/admin/account-management/suspend/' + accountId;
+            });
+        }
+
+        function activateAccount(accountId, accountNumber) {
+            showModal('Are you sure you want to activate account ' + accountNumber + '?', function() {
+                window.location.href = '/admin/account-management/activate/' + accountId;
+            });
+        }
+
+        function closeAccount(accountId, accountNumber) {
+            showModal('Are you sure you want to close account ' + accountNumber + '? This action cannot be undone.', function() {
+                window.location.href = '/admin/account-management/close/' + accountId;
+            });
+        }
+
+        function showModal(message, callback) {
+            document.getElementById('modalMessage').innerHTML = '<p>' + message + '</p>';
+            document.getElementById('confirmModal').style.display = 'block';
+            document.getElementById('confirmBtn').onclick = function() {
+                closeModal();
+                callback();
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            var modal = document.getElementById('confirmModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
