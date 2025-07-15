@@ -61,7 +61,7 @@ public class AccountController {
         logger.debug("Handling GET /accounts/create for user: {}", loggedInUser.getUsername());
         model.addAttribute("accountRequest", new AccountRequest());
         model.addAttribute("username", loggedInUser.getUsername());
-        model.addAttribute("currentUser", loggedInUser); // Added to fix null reference in Thymeleaf template
+        model.addAttribute("currentUser", loggedInUser);
         model.addAttribute("isAdmin", false);
         model.addAttribute("isManager", false);
         return "create-account";
@@ -69,21 +69,20 @@ public class AccountController {
 
     @PostMapping("/create")
     public String createAccount(@Valid @ModelAttribute("accountRequest") AccountRequest accountRequest,
-                               BindingResult result,
-                               @AuthenticationPrincipal User loggedInUser,
-                               Model model,
-                               RedirectAttributes redirectAttributes) {
+                                BindingResult result,
+                                @AuthenticationPrincipal User loggedInUser,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
         logger.debug("Handling POST /accounts/create for user: {}", loggedInUser.getUsername());
-        
-        // Add common model attributes (including currentUser)
+
         model.addAttribute("username", loggedInUser.getUsername());
-        model.addAttribute("currentUser", loggedInUser); // ADD THIS LINE
+        model.addAttribute("currentUser", loggedInUser);
         model.addAttribute("isAdmin", false);
         model.addAttribute("isManager", false);
 
         if (result.hasErrors()) {
-        	logger.debug("Validation errors in account creation: {}", result.getAllErrors());
-            model.addAttribute("errors", result.getAllErrors()); // Add errors to model
+            logger.debug("Validation errors in account creation: {}", result.getAllErrors());
+            model.addAttribute("errors", result.getAllErrors());
             return "create-account";
         }
 
@@ -96,8 +95,7 @@ public class AccountController {
             model.addAttribute("error", e.getMessage());
             return "create-account";
         } catch (Exception e) {
-            //logger.error("Unexpected error during account creation: {}", e.getMessage(), e);
-            logger.error("Unexpected error creating account", e);    
+            logger.error("Unexpected error creating account", e);
             model.addAttribute("error", "Unexpected error creating account: " + e.getMessage());
             return "create-account";
         }

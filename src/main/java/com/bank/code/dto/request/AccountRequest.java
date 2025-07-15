@@ -10,14 +10,8 @@ public class AccountRequest {
 
     private String accountNickname;
 
-    @NotBlank(message = "Currency is required")
-    private String currency;
-
     @NotBlank(message = "Branch code is required")
     private String branchCode;
-
-    @NotBlank(message = "Account purpose is required")
-    private String accountPurpose;
 
     @NotNull(message = "Initial deposit is required")
     @DecimalMin(value = "25.00", message = "Initial deposit must be at least $25.00")
@@ -43,12 +37,8 @@ public class AccountRequest {
     public void setAccountType(String accountType) { this.accountType = accountType; }
     public String getAccountNickname() { return accountNickname; }
     public void setAccountNickname(String accountNickname) { this.accountNickname = accountNickname; }
-    public String getCurrency() { return currency; }
-    public void setCurrency(String currency) { this.currency = currency; }
     public String getBranchCode() { return branchCode; }
     public void setBranchCode(String branchCode) { this.branchCode = branchCode; }
-    public String getAccountPurpose() { return accountPurpose; }
-    public void setAccountPurpose(String accountPurpose) { this.accountPurpose = accountPurpose; }
     public BigDecimal getInitialDeposit() { return initialDeposit; }
     public void setInitialDeposit(BigDecimal initialDeposit) { this.initialDeposit = initialDeposit; }
     public String getFundingSource() { return fundingSource; }

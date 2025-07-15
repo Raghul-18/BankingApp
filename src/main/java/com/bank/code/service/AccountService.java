@@ -32,10 +32,9 @@ public class AccountService {
     @Transactional
     public Account createAccount(AccountRequest request, User loggedInUser) {
         log.debug("Processing account creation request ID: {} for user: {}", UUID.randomUUID(), loggedInUser.getUsername());
-        log.debug("AccountRequest: agreeTerms={}, readDisclosures={}, electronicConsent={}, initialDeposit={}, accountType={}, currency={}, branchCode={}, accountPurpose={}",
+        log.debug("AccountRequest: agreeTerms={}, readDisclosures={}, electronicConsent={}, initialDeposit={}, accountType={}, branchCode={}",
                 request.getAgreeTerms(), request.getReadDisclosures(), request.getElectronicConsent(),
-                request.getInitialDeposit(), request.getAccountType(), request.getCurrency(),
-                request.getBranchCode(), request.getAccountPurpose());
+                request.getInitialDeposit(), request.getAccountType(), request.getBranchCode());
 
         // Validate terms and conditions
         if (!request.getAgreeTerms() || !request.getReadDisclosures()) {
@@ -43,7 +42,6 @@ public class AccountService {
                     request.getAgreeTerms(), request.getReadDisclosures());
             throw new InvalidTransactionException("All mandatory terms and conditions must be accepted");
         }
-
 
         // Validate initial deposit
         if (request.getInitialDeposit() == null || request.getInitialDeposit().compareTo(new BigDecimal("25.00")) < 0) {
@@ -69,7 +67,7 @@ public class AccountService {
 
         // Validate branch code
         if (request.getBranchCode() != null && !request.getBranchCode().isEmpty()) {
-            if (!List.of("BR000","BR001", "BR002", "BR003", "BR004").contains(request.getBranchCode())) {
+            if (!List.of("BR000", "BR001", "BR002", "BR003", "BR004").contains(request.getBranchCode())) {
                 log.error("Validation failed: Invalid branch code: {}", request.getBranchCode());
                 throw new InvalidTransactionException("Invalid branch code: " + request.getBranchCode());
             }
@@ -97,14 +95,11 @@ public class AccountService {
         account.setBalance(request.getInitialDeposit());
         account.setCreatedDate(LocalDateTime.now());
         account.setStatus("ACTIVE");
-//        account.setCurrency(request.getCurrency());
         account.setBranchCode(request.getBranchCode());
-//        account.setAccountPurpose(request.getAccountPurpose());
         account.setAccountStatus("OPEN");
 
-        log.debug("Saving account: number={}, type={}, balance={}, currency={}, branchCode={}, purpose={}",
-                accountNumber, request.getAccountType(), request.getInitialDeposit(), request.getCurrency(),
-                request.getBranchCode(), request.getAccountPurpose());
+        log.debug("Saving account: number={}, type={}, balance={}, branchCode={}",
+                accountNumber, request.getAccountType(), request.getInitialDeposit(), request.getBranchCode());
 
         Account savedAccount = accountRepository.save(account);
         log.debug("Account saved successfully with ID: {}", savedAccount.getAccountId());

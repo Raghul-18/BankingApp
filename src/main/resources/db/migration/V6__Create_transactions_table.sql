@@ -5,5 +5,5 @@ CREATE TABLE transactions (
     amount NUMBER(15,2),
     transaction_date DATE DEFAULT SYSDATE,
     description VARCHAR2(255),
-    CONSTRAINT fk_transaction_account FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    CONSTRAINT fk_transaction_account FOREIGN KEY (account_id) REFERENCES account(account_id)
 );

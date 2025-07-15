@@ -9,12 +9,6 @@ public class AccountDto {
 	public void setAccountType(String accountType) {
 		this.accountType = accountType;
 	}
-	public String getCurrency() {
-		return currency;
-	}
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
 	public Double getInitialDeposit() {
 		return initialDeposit;
 	}
@@ -26,12 +20,6 @@ public class AccountDto {
 	}
 	public void setBranchCode(String branchCode) {
 		this.branchCode = branchCode;
-	}
-	public String getAccountPurpose() {
-		return accountPurpose;
-	}
-	public void setAccountPurpose(String accountPurpose) {
-		this.accountPurpose = accountPurpose;
 	}
 	private String currency;
     private Double initialDeposit;

@@ -6,5 +6,5 @@ CREATE TABLE cards (
     cvv VARCHAR2(5),
     card_type VARCHAR2(50),
     issued_date DATE DEFAULT SYSDATE,
-    CONSTRAINT fk_card_account FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    CONSTRAINT fk_card_account FOREIGN KEY (account_id) REFERENCES account(account_id)
 );
