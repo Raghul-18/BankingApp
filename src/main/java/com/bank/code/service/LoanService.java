@@ -29,7 +29,7 @@ public class LoanService {
         loan.setUser(user);
         loan.setLoanType(loanType);
         loan.setAmount(amount);
-        loan.setOutstandingAmount(amount);
+        loan.setRemainingBalance(amount);
         loan.setStatus("PENDING");
         loan.setCreatedDate(LocalDate.now());
         loanRepository.save(loan);
@@ -44,13 +44,13 @@ public class LoanService {
             throw new RuntimeException("Unauthorized access to loan");
         }
 
-        if (loan.getOutstandingAmount().compareTo(paymentAmount) < 0) {
-            throw new RuntimeException("Payment exceeds outstanding loan amount.");
+        if (loan.getRemainingBalance().compareTo(paymentAmount) < 0) {
+            throw new RuntimeException("Payment exceeds remaining loan balance.");
         }
 
-        loan.setOutstandingAmount(loan.getOutstandingAmount().subtract(paymentAmount));
+        loan.setRemainingBalance(loan.getRemainingBalance().subtract(paymentAmount));
 
-        if (loan.getOutstandingAmount().compareTo(BigDecimal.ZERO) == 0) {
+        if (loan.getRemainingBalance().compareTo(BigDecimal.ZERO) == 0) {
             loan.setStatus("CLOSED");
         }
 

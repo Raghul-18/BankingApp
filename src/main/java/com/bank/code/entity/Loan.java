@@ -32,10 +32,21 @@ public class Loan {
     @Column(name = "STATUS")
     private String status;
 
+    // Optional: Real columns if you plan to persist them. Otherwise, keep as @Transient.
     @Transient
-    private BigDecimal outstandingAmount;
+    private BigDecimal interestRate;
 
-    // ✅ Getters & Setters
+    @Transient
+    private BigDecimal monthlyPayment;
+
+    @Transient
+    private BigDecimal remainingBalance;
+
+    @Transient
+    private int paidPercentage;
+
+    // --- GETTERS AND SETTERS ---
+
     public Long getLoanId() {
         return loanId;
     }
@@ -92,11 +103,35 @@ public class Loan {
         this.status = status;
     }
 
-    public BigDecimal getOutstandingAmount() {
-        return outstandingAmount;
+    public BigDecimal getInterestRate() {
+        return interestRate;
     }
 
-    public void setOutstandingAmount(BigDecimal outstandingAmount) {
-        this.outstandingAmount = outstandingAmount;
+    public void setInterestRate(BigDecimal interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public BigDecimal getMonthlyPayment() {
+        return monthlyPayment;
+    }
+
+    public void setMonthlyPayment(BigDecimal monthlyPayment) {
+        this.monthlyPayment = monthlyPayment;
+    }
+
+    public BigDecimal getRemainingBalance() {
+        return remainingBalance;
+    }
+
+    public void setRemainingBalance(BigDecimal remainingBalance) {
+        this.remainingBalance = remainingBalance;
+    }
+
+    public int getPaidPercentage() {
+        return paidPercentage;
+    }
+
+    public void setPaidPercentage(int paidPercentage) {
+        this.paidPercentage = paidPercentage;
     }
 }
