@@ -478,8 +478,8 @@
                 </div>
 
                 <div class="account-actions">
-                    <a th:href="@{/accounts/{id}/transactions(id=${account.accountId})}" class="btn btn-primary">
-                        📋 View Transactions
+                    <a th:href="@{/transactions(accountId=${account.accountId})}" class="btn btn-outline">
+                        📄 View Transactions
                     </a>
                     <a th:href="@{/transfer(from=${account.accountId})}" class="btn btn-outline">
                         💸 Transfer

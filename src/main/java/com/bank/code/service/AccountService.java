@@ -2,8 +2,10 @@ package com.bank.code.service;
 
 import com.bank.code.dto.request.AccountRequest;
 import com.bank.code.entity.Account;
+import com.bank.code.entity.Transaction;
 import com.bank.code.entity.User;
 import com.bank.code.repository.AccountRepository;
+import com.bank.code.repository.TransactionRepository;
 import com.bank.code.repository.UserRepository;
 import com.bank.code.exception.InvalidTransactionException;
 import org.slf4j.Logger;
@@ -28,6 +30,9 @@ public class AccountService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
+
 
     @Transactional
     public Account createAccount(AccountRequest request, User loggedInUser) {
@@ -162,6 +167,17 @@ public class AccountService {
 
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
+
+        // ✅ Add this to record the deposit as a CREDIT transaction
+        Transaction transaction = new Transaction();
+        transaction.setAccount(account);
+        transaction.setTransactionType("CREDIT");
+        transaction.setAmount(amount);
+        transaction.setTransactionDate(java.time.LocalDate.now());
+        transaction.setDescription("Deposit");
+
+        transactionRepository.save(transaction);
     }
+
 
 }

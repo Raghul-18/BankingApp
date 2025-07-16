@@ -319,12 +319,11 @@
 		
 		    <div class="action-card">
 		        <div class="action-icon">📊</div>
-		        <h3 class="action-title">Reports</h3>
-		        <p class="action-description">Generate detailed financial reports and statements</p>
+		        <h3 class="action-title">Transactions</h3>
+		        <p class="action-description">View All the trasactions</p>
 		        <div class="action-buttons">
-		            <a th:href="@{/reports}" class="btn-action">View Reports</a>
-		            <a th:href="@{/reports/generate}" th:if="${isAdmin or isManager}" class="btn-action btn-secondary">Generate Report</a>
-		        </div>
+                    <a th:href="@{/transactions}" class="btn-action">View Transactions</a>
+                </div>
 		    </div>
 		</div>
 
