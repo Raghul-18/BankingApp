@@ -1,5 +1,6 @@
 package com.bank.code.config;
 
+import com.bank.code.security.JwtAuthenticationFilter;
 import com.bank.code.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -46,35 +48,61 @@ public class SecurityConfig {
         };
     }
 
+    /**
+     * API Security: JWT, No Session, No CSRF
+     */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                .requestMatchers("/accounts", "/accounts/create").hasRole("USER") // Explicitly allow /accounts and /accounts/create
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
-                .anyRequest().authenticated()
-            )
-            .formLogin(f -> f
-                .loginPage("/login")
-                .loginProcessingUrl("/authenticate")
-                .successHandler(successHandler())
-                .failureUrl("/login?error=true")
-                .permitAll()
-            )
-            .logout(l -> l
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            )
-            .sessionManagement(s -> s
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false)
-            );
+                .securityMatcher("/api/**")  // This matches all /api/...
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * Web Security: Form Login, CSRF, Sessions
+     */
+    @Bean
+    public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/**")
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/accounts", "/accounts/create").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(f -> f
+                        .loginPage("/login")
+                        .loginProcessingUrl("/authenticate")
+                        .successHandler(successHandler())
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+                .logout(l -> l
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+                .sessionManagement(s -> s
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 }

@@ -1,9 +1,8 @@
 package com.bank.code.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.JwtException; // Explicitly import JwtException
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,7 @@ public class JwtTokenProvider {
                 .subject(username)
                 .issuedAt(now)
                 .expiration(expiryDate)
-                .signWith(key, Jwts.SIG.HS512)
+                .signWith(key)
                 .compact();
     }
 
