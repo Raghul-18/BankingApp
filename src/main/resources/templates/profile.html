@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking System - Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 3em;
+            color: white;
+        }
+
+        .profile-title {
+            font-size: 2.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-subtitle {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.2em;
+        }
+
+        .profile-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-field:last-child {
+            border-bottom: none;
+        }
+
+        .field-label {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .field-value {
+            color: #666;
+            flex: 2;
+            text-align: right;
+        }
+
+        .field-value.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .role-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .role-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-locked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .profile-actions {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .security-section {
+            grid-column: 1 / -1;
+        }
+
+        .security-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .security-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .security-item:last-child {
+            border-bottom: none;
+        }
+
+        .security-status {
+            font-weight: 500;
+        }
+
+        .security-good {
+            color: #28a745;
+        }
+
+        .security-warning {
+            color: #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .navbar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-field {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .field-value {
+                text-align: left;
+            }
+
+            .role-badges {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-brand">
+            <span>🏦</span>
+            Banking System
+        </div>
+        <div class="navbar-nav">
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/profile" class="nav-link active">Profile</a>
+            <a sec:authorize="hasRole('ADMIN')" href="/admin" class="nav-link">Admin</a>
+            <span class="nav-link">Welcome, <span th:text="${user.username}"></span></span>
+            <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <span th:text="${user.firstName != null ? user.firstName.substring(0,1).toUpperCase() : user.username.substring(0,1).toUpperCase()}"></span>
+        </div>
+        <h1 class="profile-title">
+            <span th:text="${user.firstName != null and user.lastName != null ? user.firstName + ' ' + user.lastName : user.username}"></span>
+        </h1>
+        <p class="profile-subtitle">Member since <span th:text="${user.createdDate}"></span></p>
+
+        <div class="role-badges">
+            <span th:each="role : ${user.roles}" class="role-badge" th:text="${role.roleName}"></span>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-section">
+            <h2 class="section-title">
+                <span class="section-icon">👤</span>
+                Personal Information
+            </h2>
+
+            <div class="profile-field">
+                <span class="field-label">Username:</span>
+                <span class="field-value" th:text="${user.username}"></span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Email:</span>
+                <span class="field-value" th:text="${user.email}"></span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">First Name:</span>
+                <span class="field-value" th:text="${user.firstName ?: 'Not provided'}"
+                      th:classappend="${user.firstName == null ? 'empty' : ''}"></span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Last Name:</span>
+                <span class="field-value" th:text="${user.lastName ?: 'Not provided'}"
+                      th:classappend="${user.lastName == null ? 'empty' : ''}"></span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Phone Number:</span>
+                <span class="field-value" th:text="${user.phoneNumber ?: 'Not provided'}"
+                      th:classappend="${user.phoneNumber == null ? 'empty' : ''}"></span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Address:</span>
+                <span class="field-value" th:text="${user.address ?: 'Not provided'}"
+                      th:classappend="${user.address == null ? 'empty' : ''}"></span>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2 class="section-title">
+                <span class="section-icon">🏛️</span>
+                Account Information
+            </h2>
+
+            <div class="profile-field">
+                <span class="field-label">Account Status:</span>
+                <span class="field-value">
+                        <span class="status-badge"
+                              th:classappend="${user.accountStatus == 'ACTIVE' ? 'status-active' : 'status-locked'}"
+                              th:text="${user.accountStatus}"></span>
+                    </span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">User ID:</span>
+                <span class="field-value" th:text="${user.userId}"></span>
+            </div>
+
+<!--            <div class="profile-field">-->
+<!--                <span class="field-label">Social Security:</span>-->
+<!--                <span class="field-value" th:text="${user.socialCode != null ? '***-**-' + user.socialCode.substring(user.socialCode.length()-4) : 'Not provided'}"-->
+<!--                      th:classappend="${user.socialCode == null ? 'empty' : ''}"></span>-->
+<!--            </div>-->
+
+            <div class="profile-field">
+                <span class="field-label">Account Roles:</span>
+                <span class="field-value">
+                        <div class="role-badges">
+                            <span th:each="role : ${user.roles}" class="role-badge" th:text="${role.roleName}"></span>
+                        </div>
+                    </span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Member Since:</span>
+                <span class="field-value" th:text="${user.createdDate}"></span>
+            </div>
+
+            <div class="profile-field">
+                <span class="field-label">Last Login:</span>
+                <span class="field-value" th:text="${user.lastLoginDate ?: 'First login'}"
+                      th:classappend="${user.lastLoginDate == null ? 'empty' : ''}"></span>
+            </div>
+        </div>
+
+        <div class="profile-section security-section">
+            <h2 class="section-title">
+                <span class="section-icon">🔒</span>
+                Security Information
+            </h2>
+
+            <div class="security-info">
+                <div class="security-item">
+                    <span>Account Status:</span>
+                    <span class="security-status"
+                          th:classappend="${user.accountStatus == 'ACTIVE' ? 'security-good' : 'security-warning'}"
+                          th:text="${user.accountStatus}"></span>
+                </div>
+
+                <div class="security-item">
+                    <span>Failed Login Attempts:</span>
+                    <span class="security-status"
+                          th:classappend="${user.loginAttempts == 0 ? 'security-good' : 'security-warning'}"
+                          th:text="${user.loginAttempts}"></span>
+                </div>
+
+                <div class="security-item">
+                    <span>Password Status:</span>
+                    <span class="security-status security-good">Active</span>
+                </div>
+
+                <div class="security-item">
+                    <span>Two-Factor Authentication:</span>
+                    <span class="security-status security-warning">Not Enabled</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-actions">
+        <h2 class="section-title">
+            <span class="section-icon">⚙️</span>
+            Account Actions
+        </h2>
+
+        <div class="action-buttons">
+            <a href="/profile/edit" class="btn btn-primary">
+                <span>✏️</span>
+                Edit Profile
+            </a>
+            <div th:if="${param.success}" class="alert alert-success">
+                Profile updated successfully!
+            </div>
+
+            <a href="/profile/change-password" class="btn btn-secondary">
+                <span>🔑</span>
+                Change Password
+            </a>
+
+            <a href="/profile/security" class="btn btn-outline">
+                <span>🔒</span>
+                Security Settings
+            </a>
+
+            <a href="/dashboard" class="btn btn-outline">
+                <span>🏠</span>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
