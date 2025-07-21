@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "ROLES", schema = "RAGHUL")
+@Table(name = "ROLES", schema = "CHATHURYA")
 public class Role {
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_seq")

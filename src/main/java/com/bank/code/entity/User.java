@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "USERS", schema = "RAGHUL")
+@Table(name = "USERS", schema = "CHATHURYA")
 public class User implements UserDetails {
     @Id
     //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
@@ -78,7 +78,7 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "USER_ROLES",
-        schema = "RAGHUL",
+        schema = "CHATHURYA",
         joinColumns = @JoinColumn(name = "USER_ID"),
         inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
     )
@@ -188,17 +188,18 @@ public class User implements UserDetails {
         return address;
     }
 
-    public void setAddress(String address) {
+   public void setAddress(String address) {
         this.address = address;
     }
-
-//    public String getSocialCode() {
+//    @Column(name = "SOCIAL_CODE")
+//    private String socialCode;
+//public String getSocialCode() {
 //        return socialCode;
-//    }
+//  }
 //
-//    public void setSocialCode(String socialCode) {
-//        this.socialCode = socialCode;
-//    }
+//   public void setSocialCode(String socialCode) {
+//       this.socialCode = socialCode;
+//   }
 
     public String getAccountStatus() {
         return accountStatus;
